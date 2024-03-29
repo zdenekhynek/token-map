@@ -74,7 +74,7 @@
       </div>
       <div class="flex w-full align-center justify-center items-center">
         {#each CATEGORIES as btnCategory }
-        <button class="p-2 m-2 bg-black-100 hover:bg-black-900 text-black text-white rounded border-solid border-black border-2" class:menu-open={category === btnCategory} on:click="{handleCategory}">{btnCategory}</button>
+        <button class="p-2 m-2 bg-black-100 hover:bg-black-900 text-black rounded border-solid border-black border-2" class:menu-open={category === btnCategory} on:click="{handleCategory}">{btnCategory}</button>
         {/each}
       </div>
       <div>
