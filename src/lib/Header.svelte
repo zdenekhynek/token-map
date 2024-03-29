@@ -79,7 +79,7 @@
       </div>
       <div>
         <label for="sort">
-          Sort by:
+          Sort:
           <select bind:value="{sortBy}" on:change="{handleSort}">
             {#each SORT_OPTIONS as sortOption }
             <option value="{sortOption}">{sortOption}</option>
