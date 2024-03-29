@@ -5,6 +5,7 @@
     MODEL_OPTIONS,
     SORT_OPTIONS,
     NUM_TOKENS,
+    DEFAULT_FILTERS,
     filters,
   } from "../store.js";
 
@@ -22,11 +23,21 @@
   }
 
   function handleModel(event) {
-    filters.set({ search, sortBy, numTokens, model: event.target.value });
+    filters.set({
+      search,
+      sortBy,
+      numTokens: DEFAULT_FILTERS.numTokens,
+      model: event.target.value,
+    });
   }
 
   function handleSort(event) {
-    filters.set({ search, numTokens, model, sortBy: event.target.value });
+    filters.set({
+      search,
+      numTokens: DEFAULT_FILTERS.numTokens,
+      model,
+      sortBy: event.target.value,
+    });
   }
 
   const unsubscribe = filters.subscribe((value) => {
@@ -74,14 +85,14 @@
         </select>
       </label>
 
-      <label for="numTokens">
+      <!-- <label for="numTokens">
         Num tokens:
         <select bind:value="{numTokens}" on:change="{handleLimit}">
           {#each NUM_TOKENS as numToken }
           <option value="{numToken}">{numToken}</option>
           {/each}
         </select>
-      </label>
+      </label> -->
     </div>
   </form>
 </header>

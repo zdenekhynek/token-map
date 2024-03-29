@@ -1,8 +1,11 @@
 <script>
   import { onMount, onDestroy } from "svelte";
+  import InfiniteLoading from "svelte-infinite-loading";
 
   import Header from "./lib/Header.svelte";
-  import { filters } from "./store.js";
+  import { filters, updateNumTokens } from "./store.js";
+
+  export const PAGE_SIZE = 1000;
 
   let isLoading = false;
   let allItems = [];
@@ -13,7 +16,6 @@
     const response = await fetch(`./data/${model}.txt`);
     const text = await response.text();
     allItems = text.split("\n");
-    console.log("allItems", allItems);
   }
 
   function sortItems(items, sortBy) {
@@ -32,6 +34,7 @@
   }
 
   function applyFilters(items, filters) {
+    console.log("applyFilters", items.length);
     let newItemsToDisplay = items;
 
     if (filters.search) {
@@ -50,7 +53,17 @@
       newItemsToDisplay = newItemsToDisplay.slice(0, filters.numTokens);
     }
 
+    console.log("filters", filters);
     itemsToDisplay = newItemsToDisplay;
+  }
+
+  function infiniteHandler({ detail: { loaded, complete } }) {
+    if (storeFilters.numTokens) {
+      updateNumTokens(storeFilters.numTokens + PAGE_SIZE);
+      setTimeout(() => {
+        loaded();
+      }, 1000);
+    }
   }
 
   const unsubscribe = filters.subscribe(async (newFilters) => {
@@ -102,8 +115,10 @@
     {#if isLoading}
     <div>Is loading...</div>
     {/if} {#each itemsToDisplay as item,index}
-    <div class="p-1 {colors[index % colors.length]}">{item}</div>
-    {/each}
+    <span class="p-1 {colors[index % colors.length]}">{item}</span>
+    {/each} {#if !isLoading}
+    <InfiniteLoading on:infinite="{infiniteHandler}" />
+    {/if}
   </div>
 </main>
 
