@@ -3,7 +3,7 @@
   import InfiniteLoading from "svelte-infinite-loading";
 
   import Header from "./lib/Header.svelte";
-  import { filters, updateNumTokens } from "./store.js";
+  import { filters, updateNumTokens, filterItemsByCategory } from "./store.js";
 
   export const PAGE_SIZE = 1000;
 
@@ -34,15 +34,16 @@
   }
 
   function applyFilters(items, filters) {
-    console.log("applyFilters", items.length);
     let newItemsToDisplay = items;
 
+    if (filters.category) {
+      newItemsToDisplay = filterItemsByCategory(items, filters.category);
+    }
+
     if (filters.search) {
-      newItemsToDisplay = items.filter((item) =>
-        item.toLowerCase().includes(filters.search.toLowerCase())
-      );
-    } else {
-      newItemsToDisplay = items;
+      newItemsToDisplay = newItemsToDisplay.filter((item) => {
+        return item.toLowerCase().includes(filters.search.toLowerCase());
+      });
     }
 
     if (filters.sortBy) {
@@ -53,15 +54,19 @@
       newItemsToDisplay = newItemsToDisplay.slice(0, filters.numTokens);
     }
 
-    console.log("filters", filters);
     itemsToDisplay = newItemsToDisplay;
   }
 
   function infiniteHandler({ detail: { loaded, complete } }) {
     if (storeFilters.numTokens) {
+      const originalLength = itemsToDisplay.length;
       updateNumTokens(storeFilters.numTokens + PAGE_SIZE);
       setTimeout(() => {
         loaded();
+
+        if (itemsToDisplay.length === originalLength) {
+          complete();
+        }
       }, 1000);
     }
   }
@@ -111,7 +116,7 @@
 <main>
   <Header />
 
-  <div class="flex flex-wrap" style="padding-top: 3.6rem">
+  <div class="flex flex-wrap pt-40 sm:pt-20">
     {#if isLoading}
     <div>Is loading...</div>
     {/if} {#each itemsToDisplay as item,index}
